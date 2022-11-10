@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        container_name: docker-app
+        restart: always
+        working_dir: /var/www/
+        volumes:
+            - ../:/var/www
+    nginx:
+        image: nginx:alpine
+        container_name: docker-nginx
+        restart: always
+        ports:
+            - 8000:80
+        volumes:
+            - ../:/var/www
+            - ./nginx:/etc/nginx/conf.d
+    db:
+        image: mysql
+        container_name: docker-db
+        volumes:
+            - ./storage/mysql:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        ports:
+            - 33066:3306
+    mailhog:
+        image: mailhog/mailhog
+        container_name: docker-mailhog
+        restart: always
+        logging:
+            driver: none
+        ports:
+            - 8025:8025
+            - 1025:1025
