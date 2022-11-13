@@ -3,7 +3,7 @@
 use App\Core\Router;
 use App\Core\App;
 use App\Core\ClassFinder;
-use App\Core\Container;
+use Illuminate\Container\Container;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 

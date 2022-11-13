@@ -6,6 +6,7 @@ use App\Core\Attributes\Route;
 use App\Core\Enums\HttpMethod;
 use App\Exceptions\RouteMethodNotAllowedException;
 use App\Exceptions\RouteNotFoundException;
+use Illuminate\Container\Container;
 
 class Router
 {

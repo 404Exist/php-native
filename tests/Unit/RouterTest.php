@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use App\Core\Container;
 use App\Core\Router;
 use App\Exceptions\RouteMethodNotAllowedException;
 use App\Exceptions\RouteNotFoundException;
+use Illuminate\Container\Container;
 use PHPUnit\Framework\TestCase;
 
 class RouterTest extends TestCase

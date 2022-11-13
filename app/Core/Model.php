@@ -10,9 +10,11 @@ abstract class Model
 
     protected $primaryKey = "id";
 
+    protected $connection = [];
+
     public function __construct()
     {
-        $this->db = App::db()->table($this->table);
+        $this->db = DB::instance($this->connection);
     }
 
     public function find(int $id)
@@ -20,16 +22,23 @@ abstract class Model
         return $this->db->query("SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?", [$id])->first() ?: null;
     }
 
+    public function get(array $columns = [])
+    {
+        $columns = implode(", ", array_map(fn ($column) => "`$column`", $columns)) ?: "*";
+
+        return $this->db->query("SELECT $columns FROM {$this->table}")->get();
+    }
+
     public function create(array $params = [])
     {
-        $this->db->insert($params);
+        $this->db->insert($this->table, $params);
 
         return $this->find($this->db->lastInsertId());
     }
 
     public function connection(array $connection = [])
     {
-        $this->db = DB::instance($connection)->table($this->table);
+        $this->db = DB::instance($connection);
 
         return $this;
     }

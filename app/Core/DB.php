@@ -4,6 +4,7 @@ namespace App\Core;
 
 use PDO;
 use PDOException;
+use PDOStatement;
 
 class DB
 {
@@ -11,17 +12,15 @@ class DB
 
     private static ?DB $instance = null;
 
-    private ?object $stmt = null;
-
-    private ?string $table = null;
+    private ?PDOStatement $stmt = null;
 
     final private function __construct(public object $config)
     {
         try {
             $this->pdo = new PDO(
                 "mysql:host={$config->host};port={$config->port};dbname={$config->database}",
-                "$config->user",
-                "$config->pass"
+                "$config->username",
+                "$config->password"
             );
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
@@ -40,13 +39,6 @@ class DB
         return self::$instance;
     }
 
-    public function table(string $table): DB
-    {
-        $this->table = $table;
-
-        return $this;
-    }
-
     public function query(string $sql, array $params = [])
     {
         $this->stmt = $this->pdo->prepare($sql);
@@ -56,19 +48,14 @@ class DB
         return $this;
     }
 
-    public function insert(array $params = [], ?string $table = null)
+    public function insert(string $table, array $params = [])
     {
-        $table = $table ?: $this->table;
-
         if ($params) {
             $columns = implode(", ", array_map(fn ($param) => "`$param`", array_keys($params)));
 
-            $values = implode(", ", array_map(
-                fn ($param) => gettype($param) == "string" ? "'$param'" : $param,
-                array_values($params)
-            ));
+            $binds = str_repeat("?,", count($params) - 1) . "?";
 
-            $this->query("INSERT INTO $table ($columns) VALUES ($values)");
+            $this->query("INSERT INTO $table ($columns) VALUES ($binds)", array_values($params));
         }
 
         return $this;

@@ -7,31 +7,40 @@ use App\Examples\Services\StripePayment;
 use App\Exceptions\RouteNotFoundException;
 use App\Exceptions\ViewNotFoundException;
 use Dotenv\Dotenv;
+use Illuminate\Container\Container;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Events\Dispatcher;
 use Symfony\Component\Mailer\MailerInterface;
 
 class App
 {
-    private static DB $db;
-
     public function __construct(
         protected Container $container,
         protected Router $router,
     ) {
     }
 
-    public static function db(): DB
+    public function initDB()
     {
-        return static::$db;
+        $capsule = new Capsule();
+
+        $capsule->addConnection((new Config())->db);
+
+        $capsule->setEventDispatcher(new Dispatcher($this->container));
+
+        $capsule->setAsGlobal();
+
+        $capsule->bootEloquent();
     }
 
     public function boot(): static
     {
         session_start();
 
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__ . "/../../../"));
+        $dotenv = Dotenv::createImmutable(__DIR__ . "/../..");
         $dotenv->load();
 
-        static::$db = DB::instance();
+        $this->initDB();
 
         $this->container->bind(PaymentGatewayInterface::class, StripePayment::class);
         $this->container->bind(MailerInterface::class, Mail::class);

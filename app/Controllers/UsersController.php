@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Core\App;
 use App\Core\Attributes\Get;
 use App\Core\Attributes\Post;
 use App\Core\DB;
 use App\Models\User;
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Symfony\Component\Mime\Email;
 
 class UsersController
@@ -18,7 +18,7 @@ class UsersController
 
         $user = new User();
 
-        // App::db()->transaction(function () use ($user) {
+        // DB::instance()->transaction(function () use ($user) {
         //     $user->create([
         //         "email" => "user6@user.com",
         //         "full_name" => "Obi User",
@@ -30,7 +30,7 @@ class UsersController
         //     ]);
         // });
         dd(
-            App::db()->query("SELECT * FROM users")->get(),
+            Capsule::select("select * from users"),
             $user->find(1),
             "nollywood users count is: " . $nollywood->query("SELECT * FROM users")->count()
         );
