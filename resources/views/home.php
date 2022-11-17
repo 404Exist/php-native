@@ -7,7 +7,8 @@ echo <<<HTML
     <input type="submit" />
 </form>
 <a href="/users">Users Page</a> <br />
-<a href="/doctrine">Doctrine Page</a> <br />
+<a href="/DTO">DTO Page</a> <br />
+<a href="/VO">Value Objects Page</a> <br />
 <a href="/generators">Generators Page</a> <br />
 <a href="/datetimes">Datetimes Page</a> <br />
 HTML;
